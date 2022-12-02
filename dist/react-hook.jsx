@@ -7,7 +7,7 @@ export function usePreloadImages(images, mode) {
         await preloadImages({
             images,
             mode,
-            loaded: src => setHaveLoaded(p => [...p, src]),
+            haveLoaded: setHaveLoaded,
         });
         setAllLoaded(true);
     };

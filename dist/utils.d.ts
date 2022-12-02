@@ -7,7 +7,7 @@ export type PreloadImageConfig = {
 export type Mode = 'concurrent' | 'sequential';
 export type PreloadImagesConfig = {
     images: PreloadImageConfig[];
-    loaded?: (src: string) => void;
+    haveLoaded?: (srcs: string[]) => void;
     mode: Mode;
 };
 export declare function preloadImage(config: PreloadImageConfig): Promise<void>;
