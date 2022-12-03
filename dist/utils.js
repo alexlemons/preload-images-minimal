@@ -9,20 +9,17 @@ export async function preloadImage(config) {
     }
 }
 export async function preloadImages(config) {
-    const { images, mode, haveLoaded } = config;
-    let _haveLoaded = [];
+    const { images, mode, onImageLoad } = config;
     if (mode === 'concurrent') {
         await Promise.all(images.map(async (image) => {
             await preloadImage(image);
-            _haveLoaded = [..._haveLoaded, image.src];
-            haveLoaded?.(_haveLoaded);
+            onImageLoad?.(image.src);
         }));
     }
     if (mode === 'sequential') {
         for (const image of images) {
             await preloadImage(image);
-            _haveLoaded = [..._haveLoaded, image.src];
-            haveLoaded?.(_haveLoaded);
+            onImageLoad?.(image.src);
         }
     }
 }

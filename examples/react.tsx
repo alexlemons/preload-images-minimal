@@ -28,9 +28,7 @@ const Example: React.FC = () => {
       {images.map(image => (
         <div key={image.src}>
           {haveLoaded.includes(image.src) && (
-            <img
-              {...image}
-            />
+            <img {...image} />
           )}
         </div>
       ))}

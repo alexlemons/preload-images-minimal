@@ -9,8 +9,8 @@ export type Mode = 'concurrent' | 'sequential';
 
 export type PreloadImagesConfig = {
   images: PreloadImageConfig[];
-  haveLoaded?: (srcs: string[]) => void;
   mode: Mode;
+  onImageLoad?: (src: string) => void;
 };
 
 export async function preloadImage(
@@ -29,23 +29,21 @@ export async function preloadImage(
 export async function preloadImages(
   config: PreloadImagesConfig,
 ) {
-  const { images, mode, haveLoaded } = config;
-  let _haveLoaded: string[] = [];
+  const { images, mode, onImageLoad } = config;
 
   if (mode === 'concurrent') {
     await Promise.all(
       images.map(async image => { 
         await preloadImage(image);
-        _haveLoaded = [..._haveLoaded, image.src];
-        haveLoaded?.(_haveLoaded);
+        onImageLoad?.(image.src);
       })
     );
   }
+  
   if (mode === 'sequential') {
     for (const image of images) {
       await preloadImage(image);
-      _haveLoaded = [..._haveLoaded, image.src];
-      haveLoaded?.(_haveLoaded);
+      onImageLoad?.(image.src);
     }
   }
 }
