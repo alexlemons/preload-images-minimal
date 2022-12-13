@@ -1,5 +1,4 @@
 export type PreloadImageConfig = {
-    alt: string;
     sizes?: string;
     src: string;
     srcset?: string;

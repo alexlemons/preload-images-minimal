@@ -1,5 +1,4 @@
 export type PreloadImageConfig = {
-  alt: string;
   sizes?: string;
   src: string;
   srcset?: string;
@@ -16,10 +15,9 @@ export type PreloadImagesConfig = {
 export async function preloadImage(
   config: PreloadImageConfig,
 ) {
-  const image = new Image();
-  Object.assign(image, config);
-
   try {
+    const image = new Image();
+    Object.assign(image, config);
     await image.decode();
   } catch (err) {
     console.error('Image preload error:', err)
@@ -33,7 +31,7 @@ export async function preloadImages(
 
   if (mode === 'concurrent') {
     await Promise.all(
-      images.map(async image => { 
+      images.map(async image => {
         await preloadImage(image);
         onImageLoad?.(image.src);
       })

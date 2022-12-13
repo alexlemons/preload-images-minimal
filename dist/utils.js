@@ -1,7 +1,7 @@
 export async function preloadImage(config) {
-    const image = new Image();
-    Object.assign(image, config);
     try {
+        const image = new Image();
+        Object.assign(image, config);
         await image.decode();
     }
     catch (err) {

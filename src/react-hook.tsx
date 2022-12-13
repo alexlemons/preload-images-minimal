@@ -1,29 +1,29 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { 
-  PreloadImageConfig,
-  Mode, 
   preloadImages,
+  PreloadImagesConfig,
 } from './utils';
 
-export function usePreloadImages(
-  images: PreloadImageConfig[],
-  mode: Mode,
-) {
-  const [haveLoaded, setHaveLoaded] = useState<string[]>([]);
-  const [allLoaded, setAllLoaded] = useState<boolean>(false);
+export function usePreloadImages(config: PreloadImagesConfig) {
+  const { images, mode } = config;
+  const [imagesLoaded, setImagesLoaded] = useState<string[]>([]);
+  const [allImagesLoaded, setAllImagesLoaded] = useState<boolean>(false);
 
-  const preload = async () => {
-    await preloadImages({
-      images, 
-      mode,
-      onImageLoad: src => setHaveLoaded(srcs => [...srcs, src]),
-    });
-    setAllLoaded(true);
-  }
+  useEffect(() => {
+    async function preload() {
+      setAllImagesLoaded(false);
+      await preloadImages({
+        images, 
+        mode,
+        onImageLoad: src => setImagesLoaded(srcs => [...srcs, src]),
+      });
+      setAllImagesLoaded(true);
+    }
+    preload();
+  }, [images]);
 
   return {
-    preload,
-    haveLoaded,
-    allLoaded,
+    imagesLoaded,
+    allImagesLoaded,
   };
 }
