@@ -1,2 +1,2 @@
-export * from './react-hook';
+export * from './usePreloadImages';
 export * from './utils';
