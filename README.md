@@ -2,7 +2,7 @@
 
 ## Info
 
-Image preloader. Pass an array of images and preload them either concurrently, sequentially or in batches (the images in each batch are loaded concurrently, the batches are loaded sequentially).
+Image preloader. Pass an array of images and preload them either concurrently, sequentially or in batches.
 
 Includes a React hook implementation.
 
@@ -14,11 +14,7 @@ npm i preload-images-minimal
 
 See examples.
 
-## Cache-Control
-
-['Guide for Caching and HTTP Cache Headers for Static Content'](https://imagekit.io/blog/ultimate-guide-to-http-caching-for-static-assets/) MANU CHAUDHARY  
-
-## Concurrent vs Sequential
+## Mode
 
 Concurrent:
 
@@ -27,3 +23,11 @@ Concurrent:
 Sequential:
 
 ![Sequential](./examples/images/sequential.png "Sequential")
+
+Batch (9 images, batchSize = 3):
+
+![Sequential](./examples/images/batch.png "Batch")
+
+## Cache-Control
+
+['Guide for Caching and HTTP Cache Headers for Static Content'](https://imagekit.io/blog/ultimate-guide-to-http-caching-for-static-assets/) MANU CHAUDHARY  

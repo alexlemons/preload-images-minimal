@@ -5,7 +5,6 @@ import {
 } from './utils';
 
 export function usePreloadImages(config: PreloadImagesConfig) {
-  const { images, mode } = config;
   const [imagesLoaded, setImagesLoaded] = useState<string[]>([]);
   const [allImagesLoaded, setAllImagesLoaded] = useState<boolean>(false);
 
@@ -13,14 +12,19 @@ export function usePreloadImages(config: PreloadImagesConfig) {
     async function preload() {
       setAllImagesLoaded(false);
       await preloadImages({
-        images, 
-        mode,
-        onImageLoad: src => setImagesLoaded(srcs => [...srcs, src]),
+        ...config,
+        onImageLoad: (src) => {
+          setImagesLoaded(srcs => [
+            ...srcs.filter(f => f !== src),
+            src,
+          ]);
+          config.onImageLoad?.(src);
+        },
       });
       setAllImagesLoaded(true);
     }
     preload();
-  }, [images]);
+  }, [config.images]);
 
   return {
     imagesLoaded,

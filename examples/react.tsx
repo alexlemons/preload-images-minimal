@@ -1,15 +1,8 @@
 import React, { FC } from 'react';
-import { usePreloadImages, PreloadImagesConfig } from 'preload-images-minimal';
+import { usePreloadImages } from 'preload-images-minimal';
 
-const images = [
-  { alt: 'altA', src: 'srcA' },
-  { alt: 'altB', src: 'srcB' },
-];
-
-const preloadConfig: PreloadImagesConfig = {
-  images: images.map(({ src }) => ({ src })),
-  mode: 'sequential',
-};
+const images = [{ src: 'srcA' }, { src: 'srcB' }];
+const preloadConfig = { images, mode: 'sequential' };
 
 const Example: FC = () => {
   const { imagesLoaded, allImagesLoaded } = usePreloadImages(preloadConfig);
