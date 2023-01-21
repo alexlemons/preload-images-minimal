@@ -2,15 +2,16 @@ import { preloadImage, preloadImages } from "../utils";
 
 describe('utils', () => {
   let srcSpy: jest.SpyInstance;
-  let mockDecode: jest.Mock;
+  let mockDecode: jest.Mock<Promise<void>>;
   let mockDecodeStartTime: number[] = [];
   let mockOnImageLoad: jest.Mock;
+  let onImageLoadTime: number[] = [];
 
   beforeAll(() => {
     srcSpy = jest.spyOn(global.Image.prototype, 'src', 'set');
     mockDecode = jest.fn(async () => {
       mockDecodeStartTime.push(performance.now());
-      return new Promise(resolve => setTimeout(resolve, 200));
+      return new Promise(resolve => setTimeout(resolve, 100));
     });
     Object.defineProperty(global.Image.prototype, 'decode', {
       configurable: true,
@@ -22,6 +23,7 @@ describe('utils', () => {
   afterEach(() => {    
     jest.clearAllMocks();
     mockDecodeStartTime = [];
+    onImageLoadTime = [];
   });
 
   describe('preloadImage', () => {
@@ -57,7 +59,6 @@ describe('utils', () => {
       });
 
       it('should load concurrently', async () => {
-        const onImageLoadTime: number[] = [];
         const images = [
           { src: 'imgA' },
           { src: 'imgB' },
@@ -94,7 +95,6 @@ describe('utils', () => {
       });
 
       it('should load sequentially', async () => {
-        const onImageLoadTime: number[] = [];
         const images = [
           { src: 'imgA' },
           { src: 'imgB' },
@@ -105,6 +105,55 @@ describe('utils', () => {
           onImageLoad: () => onImageLoadTime.push(performance.now()),
         });
         expect(mockDecodeStartTime[1]).toBeGreaterThan(onImageLoadTime[0]);
+      });
+    });
+
+    describe('batch mode', () => {
+      it('should load images', async () => {
+        const images = [
+          { src: 'imgA' },
+          { src: 'imgB' },
+          { src: 'imgC' },
+          { src: 'imgD' },
+        ];
+        await preloadImages({ batchSize: 2, images, mode: 'batch' });
+        expect(srcSpy).toHaveBeenNthCalledWith(1, images[0].src);
+        expect(srcSpy).toHaveBeenNthCalledWith(3, images[2].src);
+        expect(mockDecode).toHaveBeenCalledTimes(4);
+      });
+
+      it('should call onImageLoad', async () => {
+        const images = [
+          { src: 'imgA' },
+          { src: 'imgB' },
+          { src: 'imgC' },
+          { src: 'imgD' },
+        ];
+        await preloadImages({
+          batchSize: 2,
+          images,
+          mode: 'batch',
+          onImageLoad: mockOnImageLoad,
+        });
+        expect(mockOnImageLoad).toHaveBeenNthCalledWith(1, images[0].src);
+        expect(mockOnImageLoad).toHaveBeenNthCalledWith(3, images[2].src);
+      });
+
+      it('should load in batches', async () => {
+        const images = [
+          { src: 'imgA' },
+          { src: 'imgB' },
+          { src: 'imgC' },
+          { src: 'imgD' },
+        ];
+        await preloadImages({
+          batchSize: 2,
+          images,
+          mode: 'batch',
+          onImageLoad: () => onImageLoadTime.push(performance.now()),
+        });
+        expect(mockDecodeStartTime[1]).toBeLessThan(onImageLoadTime[0]);
+        expect(mockDecodeStartTime[2]).toBeGreaterThan(onImageLoadTime[1]);
       });
     });
   });

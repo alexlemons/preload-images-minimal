@@ -1,8 +1,5 @@
 import React, { FC } from 'react';
-import {
-  usePreloadImages,
-  PreloadImagesConfig
-} from 'preload-images-minimal';
+import { usePreloadImages, PreloadImagesConfig } from 'preload-images-minimal';
 
 const images = [
   { alt: 'altA', src: 'srcA' },

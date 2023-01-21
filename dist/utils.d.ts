@@ -3,11 +3,14 @@ export type PreloadImageConfig = {
     src: string;
     srcset?: string;
 };
-export type Mode = 'concurrent' | 'sequential';
+type Mode = 'concurrent' | 'sequential' | 'batch';
+type OnImageLoad = (src: string) => void;
 export type PreloadImagesConfig = {
+    batchSize?: number;
     images: PreloadImageConfig[];
     mode: Mode;
-    onImageLoad?: (src: string) => void;
+    onImageLoad?: OnImageLoad;
 };
 export declare function preloadImage(config: PreloadImageConfig): Promise<void>;
 export declare function preloadImages(config: PreloadImagesConfig): Promise<void>;
+export {};

@@ -4,12 +4,15 @@ export type PreloadImageConfig = {
   srcset?: string;
 }
 
-export type Mode = 'concurrent' | 'sequential';
+type Mode = 'concurrent' | 'sequential' | 'batch';
+
+type OnImageLoad = (src: string) => void;
 
 export type PreloadImagesConfig = {
+  batchSize?: number;
   images: PreloadImageConfig[];
   mode: Mode;
-  onImageLoad?: (src: string) => void;
+  onImageLoad?: OnImageLoad;
 };
 
 export async function preloadImage(
@@ -24,24 +27,61 @@ export async function preloadImage(
   }
 }
 
+async function concurrentPreload(
+  images: PreloadImageConfig[],
+  onImageLoad?: OnImageLoad,
+) {
+  await Promise.all(
+    images.map(async image => {
+      await preloadImage(image);
+      onImageLoad?.(image.src);
+    })
+  );
+}
+
+async function sequentialPreload(
+  images: PreloadImageConfig[],
+  onImageLoad?: OnImageLoad,
+) {
+  for (const image of images) {
+    await preloadImage(image);
+    onImageLoad?.(image.src);
+  }
+}
+
+async function batchPreload(
+  images: PreloadImageConfig[],
+  onImageLoad?: OnImageLoad,
+  batchSize = 5,
+) {
+  const batches = [];
+
+  for (let i = 0; i < images.length; i+= batchSize) {
+    batches.push(images.slice(i, i + batchSize));
+  }
+
+  for (const batch of batches) {
+    await concurrentPreload(batch, onImageLoad);
+  }
+}
+
 export async function preloadImages(
   config: PreloadImagesConfig,
 ) {
-  const { images, mode, onImageLoad } = config;
+  const {
+    batchSize,
+    images,
+    mode,
+    onImageLoad,
+  } = config;
 
   if (mode === 'concurrent') {
-    await Promise.all(
-      images.map(async image => {
-        await preloadImage(image);
-        onImageLoad?.(image.src);
-      })
-    );
+    return concurrentPreload(images, onImageLoad);
   }
-  
   if (mode === 'sequential') {
-    for (const image of images) {
-      await preloadImage(image);
-      onImageLoad?.(image.src);
-    }
+    return sequentialPreload(images, onImageLoad);
+  }
+  if (mode === 'batch') {
+    return batchPreload(images, onImageLoad, batchSize);
   }
 }
