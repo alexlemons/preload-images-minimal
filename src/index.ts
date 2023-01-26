@@ -1,2 +1,2 @@
 export * from './usePreloadImages';
-export * from './utils';
+export * from './preload-images';

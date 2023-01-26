@@ -1,6 +1,6 @@
-import { preloadImage, preloadImages } from "../utils";
+import { preloadImage, preloadImages } from "../preload-images";
 
-describe('utils', () => {
+describe('preload-images', () => {
   let srcSpy: jest.SpyInstance;
   let mockDecode: jest.Mock<Promise<void>>;
   let mockDecodeStartTime: number[] = [];
