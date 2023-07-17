@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { 
   preloadImages,
   PreloadImagesConfig,
-} from './utils';
+} from './preload-images';
 
-export function usePreloadImages(config: PreloadImagesConfig) {
+export function usePreloadImages({ onImageLoad, ...config }: PreloadImagesConfig) {
   const [imagesLoaded, setImagesLoaded] = useState<string[]>([]);
-  const [allImagesLoaded, setAllImagesLoaded] = useState<boolean>(false);
+  const [complete, setComplete] = useState<boolean>(false);
 
   useEffect(() => {
     async function preload() {
-      setAllImagesLoaded(false);
+      setComplete(false);
       await preloadImages({
         ...config,
         onImageLoad: (src) => {
@@ -18,16 +18,17 @@ export function usePreloadImages(config: PreloadImagesConfig) {
             ...srcs.filter(f => f !== src),
             src,
           ]);
-          config.onImageLoad?.(src);
+          onImageLoad?.(src);
         },
       });
-      setAllImagesLoaded(true);
+      setComplete(true);
     }
+
     preload();
   }, [config.images]);
 
   return {
     imagesLoaded,
-    allImagesLoaded,
+    complete,
   };
 }
