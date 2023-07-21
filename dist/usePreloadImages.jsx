@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { preloadImages, } from './utils';
-export function usePreloadImages(config) {
+import { preloadImages, } from './preload-images';
+export function usePreloadImages({ onImageLoad, ...config }) {
     const [imagesLoaded, setImagesLoaded] = useState([]);
-    const [allImagesLoaded, setAllImagesLoaded] = useState(false);
+    const [complete, setComplete] = useState(false);
     useEffect(() => {
         async function preload() {
-            setAllImagesLoaded(false);
+            setComplete(false);
             await preloadImages({
                 ...config,
                 onImageLoad: (src) => {
@@ -13,15 +13,15 @@ export function usePreloadImages(config) {
                         ...srcs.filter(f => f !== src),
                         src,
                     ]);
-                    config.onImageLoad?.(src);
+                    onImageLoad?.(src);
                 },
             });
-            setAllImagesLoaded(true);
+            setComplete(true);
         }
         preload();
     }, [config.images]);
     return {
         imagesLoaded,
-        allImagesLoaded,
+        complete,
     };
 }

@@ -1,5 +1,5 @@
-import { PreloadImagesConfig } from './utils';
-export declare function usePreloadImages(config: PreloadImagesConfig): {
+import { PreloadImagesConfig } from './preload-images';
+export declare function usePreloadImages({ onImageLoad, ...config }: PreloadImagesConfig): {
     imagesLoaded: string[];
-    allImagesLoaded: boolean;
+    complete: boolean;
 };
